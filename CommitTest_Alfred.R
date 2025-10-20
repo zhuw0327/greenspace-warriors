@@ -1,3 +1,5 @@
+install.packages(c("gert", "credentials"))
+
 library(gert)
 
 library(credentials)
