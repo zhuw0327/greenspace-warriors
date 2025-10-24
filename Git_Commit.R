@@ -1,7 +1,7 @@
+# Use this file to upload all your changes to github!
 install.packages(c("gert", "credentials"))
 
 library(gert)
-
 library(credentials)
 
 credentials::set_github_pat()
@@ -14,6 +14,6 @@ gert::git_add(dir(all.files = TRUE)) # select any and all new files created or e
 
 # 'staged' files are to be saved anew on GitHub 
 
-gert::git_commit_all("my first commit") # save your record of file edits - called a commit
+gert::git_commit_all("UPDATE TO GIT COMMIT INSTRUCTIONS") # save your record of file edits - called a commit
 
 gert::git_push() # push your commit to GitHub
