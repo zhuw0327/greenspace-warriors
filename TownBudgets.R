@@ -117,7 +117,7 @@ merged_final <- data_by_town %>%
   left_join(town_fin_trimmed, by = "Municipality")
 View(merged_final)
 
-head(merg)
+
 head(merged_final)
 
 #Now to run the analysis:
@@ -149,6 +149,8 @@ ci_budget <- t.test(df$cr_budget)
 ci_income <- t.test(df$mean_income)
 ci_park   <- t.test(df$mean_park_area)
 
+
+
 ci_table <- tibble(
   metric = c("Culture & Recreation budget", "Mean income", "Mean park area"),
   mean   = c(ci_budget$estimate, ci_income$estimate, ci_park$estimate),
@@ -156,6 +158,21 @@ ci_table <- tibble(
   upr    = c(ci_budget$conf.int[2], ci_income$conf.int[2], ci_park$conf.int[2])
 )
 ci_table
+
+library(knitr)
+library(kableExtra)
+
+summary_stats <- tribble(
+  ~Metric,                        ~Mean,        ~Lower_CI,    ~Upper_CI,
+  "Culture & Recreation Budget ($)", 1823423,     1210662,      2436184,
+  "Mean Income ($)",                 135389,       131130,       139647,
+  "Mean Park Area (sq ft)",        3318712,      2821622,      3815803
+)
+
+kable(summary_stats, caption = "Summary Statistics with 95% Confidence Intervals",
+      digits = 0, format = "html") %>%
+  kable_styling(full_width = FALSE, position = "center", bootstrap_options = c("striped", "hover")) %>%
+  column_spec(2:4, width = "8em")
 
 # --- 3. Correlations with 95% CIs --------------------------------------------
 cor_income <- cor.test(df$cr_budget, df$mean_income)
@@ -169,6 +186,18 @@ cor_summary <- tibble(
   pval = c(cor_income$p.value, cor_park$p.value)
 )
 cor_summary
+
+
+cor_table <- tribble(
+  ~Pair,                ~r,      ~Lower_CI,   ~Upper_CI,  ~p_value,
+  "Budget ~ Income",     0.0691, -0.0419,      0.178,      0.222,
+  "Budget ~ Park Area", -0.0429, -0.152,       0.0678,     0.448
+)
+
+kable(cor_table, caption = "Correlation Between Culture & Recreation Budget and Key Variables",
+      digits = 3, format = "html") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(2:5, width = "7em")
 
 fit <- lm(log1p(cr_budget) ~ mean_income + mean_park_area, data = df)
 model_ci <- tidy(fit, conf.int = TRUE)
@@ -196,3 +225,20 @@ pred_out <- cbind(pred_grid, preds) %>%
     upr_dollars = exp(upr) - 1
   )
 head(pred_out)
+
+library(kableExtra)
+
+pred_table <- tribble(
+  ~Mean_Income, ~Mean_Park_Area, ~Fit_Log, ~Lower_CI_Log, ~Upper_CI_Log, ~Fit_Dollars, ~Lower_Dollars, ~Upper_Dollars,
+  85154.00, 0, 12.87173, 12.63062, 13.11284, 389152.8, 305778.7, 495259.8,
+  89989.57, 0, 12.91904, 12.68873, 13.14934, 408004.4, 324073.8, 513671.9,
+  94825.15, 0, 12.96634, 12.74609, 13.18659, 427769.2, 343206.4, 533167.5,
+  99660.73, 0, 13.01365, 12.80260, 13.22470, 448491.5, 363157.8, 553876.7,
+  104496.30, 0, 13.06095, 12.85813, 13.26378, 470217.6, 383895.6, 575949.8,
+  109331.88, 0, 13.10826, 12.91257, 13.30395, 492996.2, 405373.6, 599558.6
+)
+
+kable(pred_table, caption = "Predicted Recreation Budgets by Mean Income (Park Area = 0)",
+      digits = 0, format = "html") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover")) %>%
+  column_spec(1:8, width = "7em")

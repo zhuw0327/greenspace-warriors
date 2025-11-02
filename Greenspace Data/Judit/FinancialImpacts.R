@@ -5,23 +5,25 @@ library(readr)
 source("functions_process_control.R")
 
 #----------Data pull-----------#
-complete_data = read.csv('/cloud/project/Greenspace Data/CombinedDataSet.csv')
+complete_data = read.csv("merged_final.csv")
 
 
-data <- complete_data %>%
-  mutate(ZCTA20 = as.numeric(ZCTA20)) %>%
-  filter(ZCTA20 >= 1000, ZCTA20 <= 2800)
+# data <- complete_data %>%
+#   mutate(ZCTA20 = as.numeric(ZCTA20)) %>%
+#   filter(ZCTA20 >= 1000, ZCTA20 <= 2800)
 
-data
+data = complete_data
+
+head(data)
 
 f = function(data){
   
-  ped1_mean = mean(data$PED1, na.rm = TRUE)
-  p40k_mean = mean(data$PFAMINCLT40K, na.rm = TRUE)
+  ped1_mean = mean(data$meanped1, na.rm = TRUE)
+  p40k_mean = mean(data$mean_income, na.rm = TRUE)
   
   result = data %>%
     # left_join(by = c("time" = "x"), y = stat) %>%
-    mutate(fail = PED1 > ped1_mean & PFAMINCLT40K > p40k_mean) %>%
+    mutate(fail = meanped1 > ped1_mean & mean_income > p40k_mean) %>%
     summarize(n_fail = sum(fail, na.rm = TRUE))
 
   return (result)
@@ -34,7 +36,6 @@ boot <- tibble(rep = 1:100) %>%
   rowwise() %>%
   mutate(n_fail = f(data %>% sample_n(size = n(), replace = TRUE))$n_fail) %>%
   ungroup()
-
 
 cost <- 5
 
