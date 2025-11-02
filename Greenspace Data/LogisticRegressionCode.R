@@ -19,7 +19,7 @@ library(kableExtra)
 library(webshot2)
 
 #Importing Dataset
-data = read_csv("CombinedDataSet.csv")
+data = read_csv("Greenspace Data/CombinedDataSet.csv")
 
 names(data)
 
@@ -47,6 +47,17 @@ data$p_hat <- predict(model, newdata = data, type = "response")
 #Model Fit 
 
 pR2(model)
+
+#Visualize Model Fit as table
+
+pR2(model) %>%
+  round(6) %>%
+  t() %>%
+  as.data.frame() %>%
+  `rownames<-`(NULL) %>%
+  kable(format = "html", escape = FALSE,
+        caption = "Pseudo R² Statistics for Logistic Regression") %>%
+  kable_styling(full_width = FALSE, position = "center")
 
 #AUC finding the area under the curve. 
 
