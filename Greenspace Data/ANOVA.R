@@ -8,7 +8,7 @@ library(broom)
 #----------Data pull-----------#
 data = read.csv('/cloud/project/Greenspace Data/CombinedDataSet.csv')
 
-data = data[1:1000,] #provisions here to save my system memory usage
+data = data[133:671,] #provisions here to save my system memory usage
 
 #----------Data analysis (Manual if desired) ------#
 # #----------ANOVA BY RACE AS GROUPS ------#
@@ -60,3 +60,55 @@ bind_rows(
   .id = "ANOVA on Open Parks Based on..."
 ) %>% kable("html", caption = "ANOVA Results") %>%   #UNCOMMENT OUT THE KABLE TO VIEW RAW P VALUES
   kable_styling(full_width = FALSE, position = "center")  
+
+
+bind_rows(
+  list(
+    "% Non Hispanic Black" = run_anova(data, PNHBLACK,TOT_PARK_AREA_SQMILES, 5),
+    "% Hispanic" = run_anova(data, PHISPANIC,TOT_PARK_AREA_SQMILES, 5),
+    "% White" = run_anova(data, PNHWHITE,TOT_PARK_AREA_SQMILES, 5),
+    "% People foreign born" = run_anova(data, PFBORN,TOT_PARK_AREA_SQMILES, 5),
+    "% Less than High School" = run_anova(data, PED1,TOT_PARK_AREA_SQMILES, 5),
+    "% Highschool/some College" = run_anova(data, PED2,TOT_PARK_AREA_SQMILES, 5),
+    "% Bachelors or Higher" = run_anova(data, PED3,TOT_PARK_AREA_SQMILES, 5),
+    "Median Family Income" = run_anova(data, MEDFAMINC,TOT_PARK_AREA_SQMILES, 5),
+    "% Unemployed" = run_anova(data, PUNEMP,TOT_PARK_AREA_SQMILES, 5),
+    "% Living w/ Public Assistance" = run_anova(data, PPUBAS,TOT_PARK_AREA_SQMILES, 5),
+    "Family Affluence (Ed, Income, Management)" = run_anova(data, AFFLUENCE,TOT_PARK_AREA_SQMILES, 5),
+    "Disadvantaged Folks (Minority, Poverty, Unemployed)" = run_anova(data, DISADVANTAGE,TOT_PARK_AREA_SQMILES, 5)
+  ),
+  .id = "ANOVA on Open Parks Based on..."
+) %>% kable("html", caption = "ANOVA Results") %>%   #UNCOMMENT OUT THE KABLE TO VIEW RAW P VALUES
+  kable_styling(full_width = FALSE, position = "center")  
+
+
+######################################################
+############## FINANCIAL IMPACTS #####################
+######################################################
+
+#----------Data pull-----------#
+data = read.csv('/cloud/project/Greenspace Data/CombinedDataSet.csv')
+massdata = data[133:671,] #provisions here to save my system memory usage
+
+massdata = massdata %>% 
+  filter(!is.na(TOTPOP), !is.na(TOT_PARK_AREA))
+
+cost = 0.02 #placeholder. Cost or unrealized benefit value. Per square meter of space
+lcl = 50 #m^2 based on NIH recommendations
+
+# Calculate group mean 
+massmetrics = massdata %>% 
+  mutate(
+    greenspace_per_person = TOT_PARK_AREA/TOTPOP,
+    groupmeanarea = mean(TOT_PARK_AREA), # Meters^2 #arbitrarily setting this as the LCL for now. Due to the disparity between zctas with lots of park area and those with literally 0, we may want to consider a LCL of the lower quartile of the dataset
+    parkgap = greenspace_per_person-lcl,
+    parkgap = ifelse(parkgap>lcl,0,parkgap), # omitting people that already have parks
+    # parkgap = pmin(0,lcl), #capping maximum gap to 0 to just look at the negatives 
+    ind_cost = parkgap * cost,# Calculating the total cost to the state by summing up all the nonconforming ZCTA's.
+  ) 
+tot_cost = sum(massmetrics$ind_cost, na.rm = TRUE)
+tot_cost
+
+massmetrics
+
+
