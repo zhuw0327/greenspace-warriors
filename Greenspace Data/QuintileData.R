@@ -120,3 +120,30 @@ cat(sprintf(
 row_02630  <- data %>%
   filter(ZCTA20 == "02630")
 view(row_02630$MEDFAMINC)
+
+massdata = data[133:671,]
+quantile(massdata$MEDFAMINC, probs = seq(0, 1, 0.25), na.rm = TRUE)
+
+#Bottom 10 Median family income
+lowermoney10 <- massdata %>%
+  arrange(MEDFAMINC) %>%
+  slice_head(n = 10)
+View(lowermoney10)
+
+#Lowest Median Income Zip 01105
+row_low <- massdata %>%
+  filter(ZCTA20 == "01105")
+row_low$TOT_PARK_AREA
+
+
+rowNorthReading = massdata %>%
+  filter(ZCTA20 == "01864")
+
+rowNorthReading$MEDFAMINC
+rowNorthReading$TOT_PARK_AREA
+rowNorthReading$COUNT_OPEN_PARKS
+
+
+meanfamincomd = massdata$MEDFAMINC %>% mean(na.rm=TRUE)
+meanfamincomd
+
