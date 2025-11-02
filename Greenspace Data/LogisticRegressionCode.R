@@ -6,6 +6,7 @@ install.packages("broom")
 install.packages("pROC")
 install.packages("car")
 install.packages("kableExtra")
+install.packages("webshot2")
 
 
 #Loading Libraries
@@ -15,6 +16,7 @@ library(pscl)
 library(pROC)
 library(car)
 library(kableExtra)
+library(webshot2)
 
 #Importing Dataset
 data = read_csv("CombinedDataSet.csv")
@@ -86,5 +88,6 @@ ortable %>%
   kable("html", caption = "Logistic Regression Odds Ratios") %>%
   kable_styling(full_width = FALSE, position = "center")
 
+view(ortable)
 
-
+save_kable(ortable, "ortable.pdf")
