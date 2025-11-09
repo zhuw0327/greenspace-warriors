@@ -8,7 +8,7 @@ library(broom)
 #----------Data pull-----------#
 data = read.csv('/cloud/project/Greenspace Data/CombinedDataSet.csv')
 
-data = filter(data,between(ZCTA20,1001,2791)) #provisions here to save my system memory usage
+data = filter(data,between(ZCTA20,1001,2791)) # ZCTAs restricted to Massachussetts
 
 viewdata = cut(data$PED1,3)
 print(table(viewdata))
@@ -47,14 +47,14 @@ bin_count = 3;
 bind_rows(
   list(
     "% Non Hispanic Black" = run_anova(data, PNHBLACK,COUNT_OPEN_PARKS, bin_count),
-    "% Hispanic" = run_anova(data, PHISPANIC,COUNT_OPEN_PARKS, bin_count),
+    #"% Hispanic" = run_anova(data, PHISPANIC,COUNT_OPEN_PARKS, bin_count),
     "% White" = run_anova(data, PNHWHITE,COUNT_OPEN_PARKS, bin_count),
     "% People foreign born" = run_anova(data, PFBORN,COUNT_OPEN_PARKS, bin_count),
     # "% Less than High School" = run_anova(data, PED1,COUNT_OPEN_PARKS, bin_count),
     "% Highschool/some College" = run_anova(data, PED2,COUNT_OPEN_PARKS, bin_count),
     "% Bachelors or Higher" = run_anova(data, PED3,COUNT_OPEN_PARKS, bin_count),
     "Median Family Income" = run_anova(data, MEDFAMINC,COUNT_OPEN_PARKS, bin_count),
-    "% Unemployed" = run_anova(data, PUNEMP,COUNT_OPEN_PARKS, bin_count),
+    # "% Unemployed" = run_anova(data, PUNEMP,COUNT_OPEN_PARKS, bin_count),
     "% Living w/ Public Assistance" = run_anova(data, PPUBAS,COUNT_OPEN_PARKS, bin_count),
     "Family Affluence (Ed, Income, Management)" = run_anova(data, AFFLUENCE,COUNT_OPEN_PARKS, bin_count),
     "Disadvantaged Folks (Minority, Poverty, Unemployed)" = run_anova(data, DISADVANTAGE,COUNT_OPEN_PARKS, bin_count)
